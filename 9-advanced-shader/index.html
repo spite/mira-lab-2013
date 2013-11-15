@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>MIRA - Reactive Sphere</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <style>
+            body {
+                color: #ffffff;
+                font-family:Monospace;
+                font-size:13px;
+                text-align:center;
+                font-weight: bold;
+
+                background-color: #444;
+                margin: 0px;
+                overflow: hidden;
+                
+            }
+            #info {
+                color: #fff;
+                position: absolute;
+                top: 0px; width: 100%;
+                padding: 5px;
+                z-index:100;
+            }
+            #container{
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                background-image: url( vignette.png );
+                background-size: cover;
+                background-position: 50% 50%;
+            }
+            #container canvas{
+                width: 100%;
+                height: 100%;
+            }
+            #spectrumCanvas{
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="info">MIRA Lab | Reactive sphere - 9. Advanced Shader</div>
+        <div id="container"></div>
+
+<script type="x-shader/x-vertex" id="vertexshader">
+
+    attribute float size;
+    attribute vec3 ca;
+
+    varying vec4 vColor;
+
+    void main() {
+
+        vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+        gl_Position = projectionMatrix * mvPosition;
+
+        float a = 1. - clamp( ( ( length( mvPosition.xyz ) - 200. ) / 200. ), 0., 1. );
+        gl_PointSize = 5. + a * size * 10.;
+
+        vColor = vec4( ca, 1. );
+
+    }
+
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentshader">
+
+    uniform sampler2D texture;
+    uniform float opacity;
+
+    varying vec4 vColor;
+
+    void main() {
+
+        gl_FragColor = ( vColor + vec4( vec3( gl_FragCoord.y / 10000. ), 1. ) ) * texture2D( texture, gl_PointCoord );
+        gl_FragColor.a *= length( gl_FragColor.rgb ) * opacity;
+
+    }
+
+</script>
+
+        <script src="three.min.js"></script>
+        <script src="ImprovedNoise.js"></script>
+        <script src="AudioManager.js"></script>
+        <script src="setup.js"></script>
+        <script src="main.js"></script>
+
+</body>
+
+</html>

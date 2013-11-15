@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>MIRA - Base</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <style>
+            body {
+                color: #ffffff;
+                font-family:Monospace;
+                font-size:13px;
+                text-align:center;
+                font-weight: bold;
+
+                background-color: #444;
+                margin: 0px;
+                overflow: hidden;
+                
+            }
+            #info {
+                color: #fff;
+                position: absolute;
+                top: 0px; width: 100%;
+                padding: 5px;
+                z-index:100;
+            }
+            #container{
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                background-image: url( vignette.png );
+                background-size: cover;
+                background-position: 50% 50%;
+            }
+            #container canvas{
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="info">MIRA - Reactive sphere</div>
+        <div id="container"></div>
+
+        <script src="three.min.js"></script>
+
+<script>
+
+'use strict'
+
+var renderer, scene, camera, fov = 70;
+
+var lon = 0, onPointerDownPointerX = 0, onPointerDownLon = 0,
+    lat = 0, onPointerDownPointerY = 0, onPointerDownLat = 0,
+    phi = 0, theta = 0,
+    isUserInteracting = false;
+
+init();
+animate();
+
+function init() {
+
+    camera = new THREE.PerspectiveCamera( fov, window.innerWidth / window.innerHeight, 1, 10000 );
+
+    scene = new THREE.Scene();
+
+    renderer = new THREE.WebGLRenderer( { antialias: true } );
+    onWindowResize();
+
+    var container = document.getElementById( 'container' );
+    container.appendChild( renderer.domElement );
+
+    scene.add( new THREE.Mesh( new THREE.CubeGeometry( 100, 100, 100 ), new THREE.MeshNormalMaterial () ) );
+
+    window.addEventListener( 'resize', onWindowResize, false );
+    
+    container.addEventListener( 'mousedown', onMouseDown, false );
+    container.addEventListener( 'mousemove', onMouseMove, false );
+    container.addEventListener( 'mouseup', onMouseUp, false );
+
+    container.addEventListener( 'touchstart', onTouchStart, false );
+    container.addEventListener( 'touchmove', onTouchMove, false );
+    container.addEventListener( 'touchend', onTouchEnd, false );
+    container.addEventListener( 'touchcancel', onTouchEnd, false );
+
+    container.addEventListener( 'mousewheel', onMouseWheel, false );
+    container.addEventListener( 'DOMMouseScroll', onMouseWheel, false);
+
+}
+
+function onMouseWheel( event ) {
+
+    if ( event.wheelDeltaY ) {
+        fov -= event.wheelDeltaY * 0.01;
+    } else if ( event.wheelDelta ) {
+        fov -= event.wheelDelta * 0.05;
+    } else if ( event.detail ) {
+        fov += event.detail * 1.0;
+    }
+
+    camera.projectionMatrix.makePerspective( fov, window.innerWidth / window.innerHeight, camera.near, camera.far );
+    
+}
+
+
+function onMouseDown( event ) {
+
+    isUserInteracting = true;
+
+    onPointerDownPointerX = event.clientX;
+    onPointerDownPointerY = event.clientY;
+
+    onPointerDownLon = lon;
+    onPointerDownLat = lat;
+
+    event.preventDefault();
+    
+}
+
+function onMouseMove( event ) {
+
+    if ( isUserInteracting ) {
+    
+        lon = ( event.clientX - onPointerDownPointerX ) * 0.1 + onPointerDownLon;
+        lat = ( event.clientY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
+        
+    }
+
+}
+
+function onMouseUp( event ) {
+    
+    isUserInteracting = false;
+    event.preventDefault();
+   
+}
+
+function onTouchStart( event ) {
+
+    var t = event.touches[ 0 ];
+    isUserInteracting = true;
+
+    onPointerDownPointerX = t.clientX;
+    onPointerDownPointerY = t.clientY;
+
+    onPointerDownLon = lon;
+    onPointerDownLat = lat;
+
+    event.preventDefault();
+    
+}
+
+function onTouchMove( event ) {
+
+    var t = event.touches[ 0 ];
+    lon = ( t.clientX - onPointerDownPointerX ) * 0.1 + onPointerDownLon;
+    lat = ( t.clientY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
+
+    event.preventDefault();
+
+}
+
+function onTouchEnd( event ) {
+
+    isUserInteracting = false;
+    event.preventDefault();
+   
+}
+
+function onWindowResize() {
+
+    var s = 1;
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( s * window.innerWidth, s * window.innerHeight );
+
+}
+
+function animate() {
+
+    requestAnimationFrame( animate );
+    render();
+
+}
+
+function render() {
+
+    var time = Date.now() * 0.005;
+
+    lat = Math.max( - 85, Math.min( 85, lat ) );
+    phi = ( 90 - lat ) * Math.PI / 180;
+    theta = lon * Math.PI / 180;
+
+    var d = 300;
+    camera.position.x = d * Math.sin( phi ) * Math.cos( theta );
+    camera.position.y = d * Math.cos( phi );
+    camera.position.z = d * Math.sin( phi ) * Math.sin( theta );
+
+    camera.lookAt( scene.position );
+
+    renderer.render( scene, camera );
+
+}
+
+    </script>
+
+</body>
+
+</html>

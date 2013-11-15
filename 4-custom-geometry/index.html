@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>MIRA - Reactive Sphere</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <style>
+            body {
+                color: #ffffff;
+                font-family:Monospace;
+                font-size:13px;
+                text-align:center;
+                font-weight: bold;
+
+                background-color: #444;
+                margin: 0px;
+                overflow: hidden;
+                
+            }
+            #info {
+                color: #fff;
+                position: absolute;
+                top: 0px; width: 100%;
+                padding: 5px;
+                z-index:100;
+            }
+            #container{
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                background-image: url( vignette.png );
+                background-size: cover;
+                background-position: 50% 50%;
+            }
+            #container canvas{
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="info">MIRA Lab | Reactive sphere - 4. Custom Geometry</div>
+        <div id="container"></div>
+
+        <script src="three.min.js"></script>
+        <script src="setup.js"></script>
+        <script src="main.js"></script>
+
+</body>
+
+</html>
